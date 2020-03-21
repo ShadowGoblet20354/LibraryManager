@@ -26,9 +26,9 @@ void print_help();
 book read_book();
 void print_book(book b);
 void list_books(book library[], short position);
-void isbn_lookup(book library[], short position);
-void title_lookup(book library[], short position);
-void new_title(book library[]);
+short isbn_lookup(book library[], short position);
+short title_lookup(book library[], short position);
+void new_title(book library[], short position);
 void delete_book(book library[], short* position);
 void new_date_lent(book library[]);
 void new_date_received(book library[]);
@@ -37,7 +37,7 @@ void new_date_received(book library[]);
 int main()
 {
 	book library[MAX_LIBRARY_SIZE];
-	short shelf_pointer;
+	short shelf_pointer, found_index;
 	short input;
 
 	print_help();
@@ -56,15 +56,27 @@ int main()
 				break;
 
 			case 3:
-				isbn_lookup(library, shelf_pointer);
+				found_index = isbn_lookup(library, shelf_pointer);
+				if (found_index != -1){
+					print_book(library[found_index]);
+				}
+				else {
+					puts("Error: no book with such isbn found\n");
+				}
 				break;
 
 			case 4:
-				title_lookup(library, shelf_pointer);
+				found_index = title_lookup(library, shelf_pointer);
+				if (found_index != -1){
+					print_book(library[found_index]);
+				}
+				else{
+					puts("Error: no book with such title found\n");
+				}
 				break;
-			
+
 			case 5:
-				new_title(library);
+				new_title(library, shelf_pointer);
 				break;
 			
 			case 6:
@@ -160,7 +172,7 @@ void list_books(book library[], short position){
 }
 
 
-void isbn_lookup(book library[], short position){
+void short_lookup(book library[], short position){
 	int isbn;
 	short i;
 
@@ -169,17 +181,14 @@ void isbn_lookup(book library[], short position){
 
 	for (i = 0; i < position; i++){
 		if (library[i].isbn == isbn){
-			print_book(library[i]);
-			break;
+			return i;
 		}
 	}
-	if (i == position){
-		puts("Error: no book with such isbn.\n");
-	}
+	return -1;
 }
 
 
-void title_lookup(book library[], short position){
+short title_lookup(book library[], short position){
 	char title[MAX_B_TITLE_LEN];
 	short i;
 
@@ -190,12 +199,23 @@ void title_lookup(book library[], short position){
 	{
 		if (strcmp(library[i].title, title))
 		{
-			print_book(library[i]);
-			break;
+			return i;
 		}
 	}
-	if (i == position)
-	{
-		puts("Error: no book with such title.\n");
+	return -1;
+}
+
+
+void new_title(book library[], short position){
+	short index;
+
+	index = title_lookup(library, position);
+
+	if (index == -1){
+		puts("Error: no book with such title found\n");
+		return;
 	}
+
+	puts("New title:");
+	scanf("%39s", library[index].title);
 }
