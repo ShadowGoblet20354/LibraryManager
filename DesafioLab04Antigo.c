@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #define MAX_LIBRARY_SIZE 50
 #define MAX_B_TITLE_LEN 40
@@ -21,22 +22,22 @@ typedef struct {
 } book;
 
 
-void print_help(void);
-book read_book(void);
+void print_help();
+book read_book();
 void print_book(book b);
-void list_books(book library[]);
-short isbn_lookup(int isbn, book library[]);
-int read_isbn(void);
-short title_lookup(char title[], book library[]);
-void new_title(char new_title[], short position, book library[]);
-void delete_book(short position, book library[]);
-void new_date_lent(date date_lent, short position, book library[]);
-void new_date_received(date date_received, short position, book library[]);
+void list_books(book library[], short position);
+void isbn_lookup(book library[], short position);
+void title_lookup(book library[], short position);
+void new_title(book library[]);
+void delete_book(book library[], short* position);
+void new_date_lent(book library[]);
+void new_date_received(book library[]);
 
 
-int main(){
+int main()
+{
 	book library[MAX_LIBRARY_SIZE];
-	short shelf_pointer, position;
+	short shelf_pointer;
 	short input;
 
 	print_help();
@@ -51,27 +52,49 @@ int main(){
 				break;
 			
 			case 2:
-				list_books(library);
-				break;
-			
-			case 3:
-				position = isbn_lookup(read_isbn(), library);
-				if (position != -1){
-					print_book(library[position]);
-				}
-				else {
-					puts("Error: book not found.");
-				}
+				list_books(library, shelf_pointer);
 				break;
 
+			case 3:
+				isbn_lookup(library, shelf_pointer);
+				break;
+
+			case 4:
+				title_lookup(library, shelf_pointer);
+				break;
 			
-				
+			case 5:
+				new_title(library);
+				break;
+			
+			case 6:
+				delete_book(library, &shelf_pointer);
+				break;
+			
+			case 7:
+				new_date_lent(library);
+				break;
+			
+			case 8:
+				new_date_received(library);
+				break;
+			
+			case 9:
+				print_help();
+				break;
+			
+			case 0:
+				puts("\nTerminating...\n");
+				break;				
 		}
 	} while (input != 0);
 
+	return 0;
 }
 
-void print_help(void){
+
+void print_help()
+{
 	puts("****BIBLIOTECA DO IST****\n");
 	puts("1 - Inserir novo livro\n");
 	puts("2 - Listar livros\n");
@@ -87,7 +110,7 @@ void print_help(void){
 }
 
 
-book read_book(void)
+book read_book()
 {
 	book b_in;
 	date lent = {1, 1, 1970}, received = {1, 1, 1970};
@@ -111,4 +134,68 @@ book read_book(void)
 	b_in.date_received = received;
 
 	return b_in;
+}
+
+
+void print_book(book b){
+	puchar('\n');
+	printf("Title: %s", b.title);
+	printf("Author: %s", b.author);
+	printf("ISBN: %d\n", b.isbn);
+	printf("Year published: %hd\n", b.year_published);
+	printf("Copy number: %hd\n", b.copy_number);
+	printf("Lent on: %2hd-%2hd-%4hd\n", b.date_lent.day, b.date_lent.month, b.date_lent.year);
+	printf("Received on: %2hd-%2hd-%4hd\n", b.date_received.day, b.date_received.month, b.date_received.year);
+	putchar('\n');
+}
+
+
+void list_books(book library[], short position){
+	short k;
+
+	for (k = 0; k < position; k++){
+		puts(library[k].title);
+	}
+	putchar('\n');
+}
+
+
+void isbn_lookup(book library[], short position){
+	int isbn;
+	short i;
+
+	puts("ISBN:");
+	scanf("%d", &isbn);
+
+	for (i = 0; i < position; i++){
+		if (library[i].isbn == isbn){
+			print_book(library[i]);
+			break;
+		}
+	}
+	if (i == position){
+		puts("Error: no book with such isbn.\n");
+	}
+}
+
+
+void title_lookup(book library[], short position){
+	char title[MAX_B_TITLE_LEN];
+	short i;
+
+	puts("Title:");
+	scanf("%39s", title);
+
+	for (i = 0; i < position; i++)
+	{
+		if (strcmp(library[i].title, title))
+		{
+			print_book(library[i]);
+			break;
+		}
+	}
+	if (i == position)
+	{
+		puts("Error: no book with such title.\n");
+	}
 }
