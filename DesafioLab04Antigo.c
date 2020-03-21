@@ -219,3 +219,17 @@ void new_title(book library[], short position){
 	puts("New title:");
 	scanf("%39s", library[index].title);
 }
+
+
+void delete_book(book library[], short *position){
+	short index;
+
+	index = title_lookup(library, *position);
+
+	if (index == -1){
+		puts("Error: no book with such title found\n");
+		return;
+	}
+
+	library[index] = library[*position--];
+}
