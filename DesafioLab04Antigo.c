@@ -32,6 +32,7 @@ void new_title(book library[], short position);
 void delete_book(book library[], short* position);
 void new_date_lent(book library[], short position);
 void new_date_received(book library[], short position);
+void clear_stdin_stream();
 
 
 int main()
@@ -45,6 +46,7 @@ int main()
 	do {
 		putchar('>');
 		scanf("%hd", &input);
+		clear_stdin_stream();
 
 		switch (input){
 			case 1:
@@ -96,7 +98,7 @@ int main()
 				break;
 			
 			case 0:
-				printf("\nTerminating...\n");
+				printf("Terminating...\n\n");
 				break;				
 		}
 	} while (input != 0);
@@ -127,20 +129,22 @@ book read_book()
 	book b_in;
 	date lent = {1, 1, 1970}, received = {1, 1, 1970};
 
-	printf("Title:");
-	scanf("%39s", b_in.title);
+	printf("Title: ");
+	fgets(b_in.title, MAX_B_TITLE_LEN, stdin);
 
-	printf("Author:");
-	scanf("%19s", b_in.author);
+	printf("Author: ");
+	fgets(b_in.author, MAX_B_AUTHOR_LEN, stdin);
 
-	printf("ISBN:");
+	printf("ISBN: ");
 	scanf("%d", &b_in.isbn);
 
-	printf("Year published:");
+	printf("Year published: ");
 	scanf("%hd", &b_in.year_published);
 
-	printf("Copy number:");
+	printf("Copy number: ");
 	scanf("%hd", &b_in.copy_number);
+
+	clear_stdin_stream();
 
 	b_in.date_lent = lent;
 	b_in.date_received = received;
@@ -156,7 +160,7 @@ void print_book(book b){
 	printf("ISBN: %d\n", b.isbn);
 	printf("Year published: %hd\n", b.year_published);
 	printf("Copy number: %hd\n", b.copy_number);
-	printf("Lent on: %2hd-%2hd-%4hd\n", b.date_lent.day, b.date_lent.month, b.date_lent.year);
+	printf("Lent on: %02hd-%02hd-%04hd\n", b.date_lent.day, b.date_lent.month, b.date_lent.year);
 	printf("Received on: %02hd-%02hd-%04hd\n", b.date_received.day, b.date_received.month, b.date_received.year);
 	putchar('\n');
 }
@@ -165,6 +169,9 @@ void print_book(book b){
 void list_books(book library[], short position){
 	short k;
 
+	putchar('\n');
+	puts("* * * Books * * *\n");
+
 	for (k = 0; k < position; k++){
 		printf("%s", library[k].title);
 	}
@@ -172,12 +179,14 @@ void list_books(book library[], short position){
 }
 
 
- short isbn_lookup(book library[], short position){
+short isbn_lookup(book library[], short position){
 	int isbn;
 	short i;
 
-	printf("ISBN:");
+	printf("ISBN: ");
 	scanf("%d", &isbn);
+
+	clear_stdin_stream();
 
 	for (i = 0; i < position; i++){
 		if (library[i].isbn == isbn){
@@ -192,12 +201,12 @@ short title_lookup(book library[], short position){
 	char title[MAX_B_TITLE_LEN];
 	short i;
 
-	printf("Title:");
-	scanf("%39s", title);
+	printf("Title: ");
+	fgets(title, MAX_B_TITLE_LEN, stdin);
 
 	for (i = 0; i < position; i++)
 	{
-		if (strcmp(library[i].title, title))
+		if (!strcmp(library[i].title, title))
 		{
 			return i;
 		}
@@ -212,26 +221,26 @@ void new_title(book library[], short position){
 	index = title_lookup(library, position);
 
 	if (index == -1){
-		printf("Error: no book was found with such title\n");
+		printf("Error: no book was found with such title\n\n");
 		return;
 	}
 
-	printf("New title:");
-	scanf("%39s", library[index].title);
+	printf("New title: ");
+	fgets(library[index].title, MAX_B_TITLE_LEN, stdin);
 }
 
 
 void delete_book(book library[], short *position){
 	short index;
 
-	index = title_lookup(library, *position);
+	index = isbn_lookup(library, *position);
 
 	if (index == -1){
-		printf("Error: no book was found with such title\n");
+		printf("Error: no book was found with such isbn\n\n");
 		return;
 	}
 
-	library[index] = library[(*position)--];
+	library[index] = library[--*position];
 }
 
 
@@ -242,18 +251,20 @@ void new_date_lent(book library[], short position){
 	index = title_lookup(library, position);
 
 	if (index == -1){
-		printf("Error: no book was found with such title\n");
+		printf("Error: no book was found with such title\n\n");
 		return;
 	}
 
-	printf("Day:");
+	printf("Day: ");
 	scanf("%hd", &d_lent.day);
 
-	printf("Month:");
+	printf("Month: ");
 	scanf("%hd", &d_lent.month);
 
-	printf("Year:");
+	printf("Year: ");
 	scanf("%hd", &d_lent.year);
+
+	clear_stdin_stream();
 
 	library[index].date_lent = d_lent;	
 }
@@ -268,18 +279,26 @@ void new_date_received(book library[], short position){
 
 	if (index == -1)
 	{
-		printf("Error: no book was found with such title\n");
+		printf("Error: no book was found with such title\n\n");
 		return;
 	}
 
-	printf("Day:");
+	printf("Day: ");
 	scanf("%hd", &d_received.day);
 
-	printf("Month:");
+	printf("Month: ");
 	scanf("%hd", &d_received.month);
 
-	printf("Year:");
+	printf("Year: ");
 	scanf("%hd", &d_received.year);
 
+	clear_stdin_stream();
+
 	library[index].date_received = d_received;
+}
+
+
+void clear_stdin_stream(){
+	char c;
+	while((c = getchar()) != '\n' && c != EOF);
 }
