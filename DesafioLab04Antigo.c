@@ -3,7 +3,7 @@
 
 #define MAX_LIBRARY_SIZE 50
 #define MAX_B_TITLE_LEN 40
-#define MAX_B_AUTHOR_LEN 20
+#define MAX_B_AUTHOR_LEN 30
 
 typedef struct {
 	short day;
@@ -12,11 +12,10 @@ typedef struct {
 } date;
 
 typedef struct {
-	char title[MAX_B_AUTHOR_LEN];
-	char author[MAX_B_TITLE_LEN];
+	char title[MAX_B_TITLE_LEN];
+	char author[MAX_B_AUTHOR_LEN];
 	int isbn;
 	short year_published;
-	short copy_number;
 	date date_lent;
 	date date_received;
 } book;
@@ -109,6 +108,7 @@ int main()
 
 void print_help()
 {
+	putchar('\n');
 	printf("****BIBLIOTECA DO IST****\n");
 	printf("1 - Inserir novo livro\n");
 	printf("2 - Listar livros\n");
@@ -121,6 +121,7 @@ void print_help()
 	printf("9 - Mostrar ajuda\n");
 	printf("0 - Sair\n");
 	printf("*************************\n");
+	putchar('\n');
 }
 
 
@@ -129,6 +130,7 @@ book read_book()
 	book b_in;
 	date lent = {1, 1, 1970}, received = {1, 1, 1970};
 
+	putchar('\n');
 	printf("Title: ");
 	fgets(b_in.title, MAX_B_TITLE_LEN, stdin);
 
@@ -140,9 +142,7 @@ book read_book()
 
 	printf("Year published: ");
 	scanf("%hd", &b_in.year_published);
-
-	printf("Copy number: ");
-	scanf("%hd", &b_in.copy_number);
+	putchar('\n');
 
 	clear_stdin_stream();
 
@@ -159,7 +159,6 @@ void print_book(book b){
 	printf("Author: %s", b.author);
 	printf("ISBN: %d\n", b.isbn);
 	printf("Year published: %hd\n", b.year_published);
-	printf("Copy number: %hd\n", b.copy_number);
 	printf("Lent on: %02hd-%02hd-%04hd\n", b.date_lent.day, b.date_lent.month, b.date_lent.year);
 	printf("Received on: %02hd-%02hd-%04hd\n", b.date_received.day, b.date_received.month, b.date_received.year);
 	putchar('\n');
@@ -170,7 +169,13 @@ void list_books(book library[], short position){
 	short k;
 
 	putchar('\n');
-	puts("* * * Books * * *\n");
+
+	if (position == 0){
+		puts("There are no books at the moment.\n");
+		return;
+	}
+
+	puts("* * * Books * * *");
 
 	for (k = 0; k < position; k++){
 		printf("%s", library[k].title);
@@ -183,6 +188,7 @@ short isbn_lookup(book library[], short position){
 	int isbn;
 	short i;
 
+	putchar('\n');
 	printf("ISBN: ");
 	scanf("%d", &isbn);
 
@@ -201,6 +207,7 @@ short title_lookup(book library[], short position){
 	char title[MAX_B_TITLE_LEN];
 	short i;
 
+	putchar('\n');
 	printf("Title: ");
 	fgets(title, MAX_B_TITLE_LEN, stdin);
 
@@ -227,6 +234,7 @@ void new_title(book library[], short position){
 
 	printf("New title: ");
 	fgets(library[index].title, MAX_B_TITLE_LEN, stdin);
+	putchar('\n');
 }
 
 
@@ -241,6 +249,7 @@ void delete_book(book library[], short *position){
 	}
 
 	library[index] = library[--*position];
+	putchar('\n');
 }
 
 
@@ -263,6 +272,7 @@ void new_date_lent(book library[], short position){
 
 	printf("Year: ");
 	scanf("%hd", &d_lent.year);
+	putchar('\n');
 
 	clear_stdin_stream();
 
@@ -291,6 +301,7 @@ void new_date_received(book library[], short position){
 
 	printf("Year: ");
 	scanf("%hd", &d_received.year);
+	putchar('\n');
 
 	clear_stdin_stream();
 
